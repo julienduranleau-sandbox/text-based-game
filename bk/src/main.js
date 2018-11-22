@@ -7,24 +7,40 @@ const characters = generateCharacterList()
 const bitmapFont = generateBitmapFont('16px Inconsolata', characters.str.split(''))
 
 const renderCanvas = document.createElement('canvas', { alpha: false })
-const renderCtx = renderCanvas.getContext('2d')
-renderCanvas.width = window.innerWidth
-renderCanvas.height = window.innerHeight
 document.body.appendChild(renderCanvas)
 
-const bufferCanvas = document.createElement('canvas', { alpha: false })
-const ctx = bufferCanvas.getContext('2d')
-bufferCanvas.width = renderCanvas.width
-bufferCanvas.height = renderCanvas.height
+const vertexFile = 'shader.vert'
+const fragmentFile = 'shader.frag'
+
+const glsl = new GlslSandbox(renderCanvas, vertexFile, fragmentFile, 800, 600)
+const gl = glsl.gl
 
 let frame = 1
+let chars = new Uint8Array(256 * 256 * 4)
 
-tick()
+for (let i = 0; i < chars.length; i += 4) {
+    chars[i] = 66 //(i + frame) % characters.str.length
+}
+
+glsl.on('post-init', () => {
+    glsl.registerUniform('u_texture', 't', bitmapFont)
+    glsl.registerUniform('u_chars', 'tarray', chars)
+})
+
+
+glsl.on('pre-render', () => {
+    for (let i = 0; i < chars.length; i += 4) {
+        chars[i] = (i + frame) % characters.str.length
+    }
+
+    glsl.uniforms.u_chars.value = chars
+
+    frame++
+})
 
 function generateCachedCharacterBitmaps(bitmapFont, characters) {
     const list = {}
     const bitmapFontCtx = bitmapFont.getContext('2d')
-
 
     return list
 }
@@ -34,11 +50,9 @@ function tick() {
         for (let col = 0; col < COLS; col++) {
             // ctx.fillText(randomLetter, col * 8, row * 18)
             let characterIndex = (row * COLS + col + frame) % characters.count
-            drawCharacter(characters.str[characterIndex], col, row)
+//            drawCharacter(characters.str[characterIndex], col, row)
         }
     }
-
-    renderCtx.drawImage(bufferCanvas, 0, 0)
 
     frame++
     window.requestAnimationFrame(tick)
@@ -50,29 +64,26 @@ function drawCharacter(char, col, row) {
 }
 
 function generateBitmapFont(font, characters) {
-    const cachedList = {}
-
     const canvas = document.createElement('canvas')
-    canvas.width = characters.length * CHAR_WIDTH
-    canvas.height = CHAR_HEIGHT
+    canvas.width = 1024 //characters.length * CHAR_WIDTH
+    canvas.height = 1024 //CHAR_HEIGHT
 
     const ctx = canvas.getContext('2d')
     ctx.font = font
     ctx.textBaseline = 'top'
 
-    ctx.fillStyle = "#000000"
+    ctx.fillStyle = "#FFFFCC"
     ctx.fillRect(0,0,canvas.width,canvas.height)
 
-    ctx.fillStyle = "#FFFFFF"
+    ctx.fillStyle = "#000000"
 
     for (let [i, character] of characters.entries()) {
         ctx.fillText(character, i * CHAR_WIDTH, 0)
-        cachedList[character] = ctx.getImageData(i * CHAR_WIDTH, 0, CHAR_WIDTH, CHAR_HEIGHT)
     }
 
-    // document.body.appendChild(canvas)
+    //document.body.appendChild(canvas)
 
-    return cachedList
+    return canvas
 }
 
 function generateCharacterList() {

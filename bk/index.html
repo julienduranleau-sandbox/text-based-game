@@ -4,15 +4,14 @@
         <meta charset="utf-8">
         <title>Text Game</title>
         <style type="text/css">
-            html, body { padding: 0px; margin: 0px; background: #000; }
+            html, body { padding: 0px; margin: 0px; }
+            body { background-color: #222; }
+            canvas { position: absolute; top: 50%; left: 50%; margin: -300px 0px 0px -400px; }
         </style>
     </head>
     <body>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.2/pixi.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/pixi-projection@0.2.2/dist/pixi-projection.js"></script>
-        <script src="src/TextureAtlas.js"></script>
-        <script src="src/Keyboard.js"></script>
-        <script src="src/Map.js"></script>
+        <script src="src/lib/GlslSandbox.js"></script>
         <script src="src/main.js"></script>
     </body>
 </html>

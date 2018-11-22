@@ -175,10 +175,19 @@
                     break
                 case 't':
                     let texture = gl.createTexture()
+                    gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, texture)
                     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, uniform.value)
                     gl.generateMipmap(gl.TEXTURE_2D)
                     gl.uniform1i(uniform.glRef, 0);
+                    break
+                case 'tarray':
+                    let textureArray = gl.createTexture()
+                    gl.activeTexture(gl.TEXTURE1);
+                    gl.bindTexture(gl.TEXTURE_2D, textureArray)
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, uniform.value);
+                    gl.generateMipmap(gl.TEXTURE_2D)
+                    gl.uniform1i(uniform.glRef, 1);
                     break
             }
 
