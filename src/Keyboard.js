@@ -19,13 +19,23 @@ class Keyboard {
     }
 
     keyup(e) {
-        this.pressed[e.keyCode] = false
+        this.pressed[e.key] = false
     }
 
-    isPressed(keyCode) {
-        if (this.pressed[keyCode]) {
+    isPressed(key) {
+        if (this.pressed[key]) {
             return true
         }
         return false
+    }
+
+    fakeKeyPress(key, delay = 0) {
+        setTimeout(() => {
+            this.pressed[key] = true
+
+            setTimeout(() => {
+                this.pressed[key] = false
+            }, 50)
+        }, delay)
     }
 }
